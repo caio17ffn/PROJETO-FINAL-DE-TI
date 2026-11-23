@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block titulo %}Consultas — Clínica Santiago{% endblock %}
+
+{% block conteudo %}
+<h2>Consultas</h2>
+
+<div class="card">
+  <form action="{{ url_for('nova_consulta') }}" method="POST">
+    <select name="paciente_id" required>
+      <option value="">Selecione o paciente</option>
+      {% for p in pacientes %}
+        <option value="{{ p.id }}">{{ p.nome }}</option>
+      {% endfor %}
+    </select>
+    <input type="date" name="data" required>
+    <input type="time" name="horario">
+    <input name="observacao" placeholder="Observação">
+    <button type="submit">Agendar</button>
+  </form>
+</div>
+
+<div class="card">
+  <form action="{{ url_for('pagina_consultas') }}" method="GET">
+    <input type="date" name="data" value="{{ filtro or '' }}">
+    <button type="submit">Buscar por data</button>
+  </form>
+
+  <table>
+    <tr><th>Paciente</th><th>Data</th><th>Horário</th><th>Observação</th><th>Ações</th></tr>
+    {% for c in consultas %}
+    <tr>
+      <td>{{ c.paciente }}</td>
+      <td>{{ c.data }}</td>
+      <td>{{ c.horario }}</td>
+      <td>{{ c.observacao }}</td>
+      <td><a href="{{ url_for('apagar_consulta', cid=c.id) }}">Excluir</a></td>
+    </tr>
+    {% else %}
+    <tr><td colspan="5">Nenhuma consulta encontrada.</td></tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}
