@@ -1,9 +1,31 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify
+from flask import Flask, render_template, request, redirect, url_for, jsonify, send_from_directory, abort
 from datetime import date
+import os
 import banco, logica
 
-app = Flask(__name__)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+app = Flask(__name__, template_folder=BASE_DIR, static_folder=None)
 banco.criar_banco()          # cria o banco ao iniciar (funciona no Render tb)
+
+# ---------------- ARQUIVOS ESTÁTICOS (só o CSS) ----------------
+
+ARQUIVOS_PUBLICOS = {"style.css"}
+
+
+# endpoint="static" mantém funcionando url_for('static', filename='style.css')
+@app.route("/static/<path:filename>", endpoint="static")
+def arquivo_estatico(filename):
+    if filename not in ARQUIVOS_PUBLICOS:
+        abort(404)
+    return send_from_directory(BASE_DIR, filename)
+
+
+# caso o HTML chame direto href="style.css" ou href="/style.css"
+@app.route("/style.css")
+def css():
+    return send_from_directory(BASE_DIR, "style.css")
+
 
 # ---------------- PÁGINAS ----------------
 
